@@ -1,0 +1,615 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "flux1-dev-fp8.safetensors"
+    },
+    "_meta": {
+      "title": "Load Flux.1-dev fp8"
+    }
+  },
+  "2": {
+    "class_type": "ControlNetLoader",
+    "inputs": {
+      "control_net_name": "flux1-dev-controlnet-union-pro.safetensors"
+    },
+    "_meta": {
+      "title": "Load ControlNet Union-Pro"
+    }
+  },
+  "3": {
+    "class_type": "SetUnionControlNetType",
+    "inputs": {
+      "control_net": [
+        "2",
+        0
+      ],
+      "type": "canny/lineart/anime_lineart/mlsd"
+    },
+    "_meta": {
+      "title": "Set Union Type: canny"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "example.png",
+      "upload": "image"
+    },
+    "_meta": {
+      "title": "Load Product Image"
+    }
+  },
+  "5": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "4",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1024,
+      "crop": "center"
+    },
+    "_meta": {
+      "title": "Scale to 1024x1024"
+    }
+  },
+  "6": {
+    "class_type": "Canny",
+    "inputs": {
+      "image": [
+        "5",
+        0
+      ],
+      "low_threshold": 0.1,
+      "high_threshold": 0.3
+    },
+    "_meta": {
+      "title": "Canny Edges"
+    }
+  },
+  "7": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "Empty Latent 1024"
+    }
+  },
+  "8": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": ""
+    },
+    "_meta": {
+      "title": "Negative (empty for Flux)"
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "luxury product photography, photorealistic, soft caustics, sharp focus, 8k, professional commercial shot, minimalist white studio, soft north-facing daylight, marble pedestal, clean shadow, editorial"
+    },
+    "_meta": {
+      "title": "Prompt: studio"
+    }
+  },
+  "10": {
+    "class_type": "ControlNetApplyAdvanced",
+    "inputs": {
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "control_net": [
+        "3",
+        0
+      ],
+      "image": [
+        "6",
+        0
+      ],
+      "strength": 0.55,
+      "start_percent": 0.0,
+      "end_percent": 0.7,
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "Apply CN: studio"
+    }
+  },
+  "11": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "10",
+        0
+      ],
+      "negative": [
+        "10",
+        1
+      ],
+      "latent_image": [
+        "7",
+        0
+      ],
+      "seed": 42,
+      "control_after_generate": "fixed",
+      "steps": 20,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "KSampler: studio"
+    }
+  },
+  "12": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "11",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "VAE Decode: studio"
+    }
+  },
+  "13": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "34",
+        0
+      ],
+      "filename_prefix": "product-localizer/studio"
+    },
+    "_meta": {
+      "title": "Save: studio"
+    }
+  },
+  "14": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "luxury product photography, photorealistic, soft caustics, sharp focus, 8k, professional commercial shot, Parisian cafe terrace, golden hour, warm bistro lighting, blurred haussmannian background, bokeh"
+    },
+    "_meta": {
+      "title": "Prompt: paris"
+    }
+  },
+  "15": {
+    "class_type": "ControlNetApplyAdvanced",
+    "inputs": {
+      "positive": [
+        "14",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "control_net": [
+        "3",
+        0
+      ],
+      "image": [
+        "6",
+        0
+      ],
+      "strength": 0.55,
+      "start_percent": 0.0,
+      "end_percent": 0.7,
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "Apply CN: paris"
+    }
+  },
+  "16": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "15",
+        0
+      ],
+      "negative": [
+        "15",
+        1
+      ],
+      "latent_image": [
+        "7",
+        0
+      ],
+      "seed": 43,
+      "control_after_generate": "fixed",
+      "steps": 20,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "KSampler: paris"
+    }
+  },
+  "17": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "16",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "VAE Decode: paris"
+    }
+  },
+  "18": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "35",
+        0
+      ],
+      "filename_prefix": "product-localizer/paris"
+    },
+    "_meta": {
+      "title": "Save: paris"
+    }
+  },
+  "19": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "luxury product photography, photorealistic, soft caustics, sharp focus, 8k, professional commercial shot, neon-lit Tokyo street at night, rain reflections, vending machines bokeh, cyberpunk ambience"
+    },
+    "_meta": {
+      "title": "Prompt: tokyo"
+    }
+  },
+  "20": {
+    "class_type": "ControlNetApplyAdvanced",
+    "inputs": {
+      "positive": [
+        "19",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "control_net": [
+        "3",
+        0
+      ],
+      "image": [
+        "6",
+        0
+      ],
+      "strength": 0.55,
+      "start_percent": 0.0,
+      "end_percent": 0.7,
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "Apply CN: tokyo"
+    }
+  },
+  "21": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "20",
+        0
+      ],
+      "negative": [
+        "20",
+        1
+      ],
+      "latent_image": [
+        "7",
+        0
+      ],
+      "seed": 44,
+      "control_after_generate": "fixed",
+      "steps": 20,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "KSampler: tokyo"
+    }
+  },
+  "22": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "21",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "VAE Decode: tokyo"
+    }
+  },
+  "23": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "36",
+        0
+      ],
+      "filename_prefix": "product-localizer/tokyo"
+    },
+    "_meta": {
+      "title": "Save: tokyo"
+    }
+  },
+  "24": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "luxury product photography, photorealistic, soft caustics, sharp focus, 8k, professional commercial shot, tropical beach at sunset, wet sand, palm shadow, cinematic, golden light"
+    },
+    "_meta": {
+      "title": "Prompt: beach"
+    }
+  },
+  "25": {
+    "class_type": "ControlNetApplyAdvanced",
+    "inputs": {
+      "positive": [
+        "24",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "control_net": [
+        "3",
+        0
+      ],
+      "image": [
+        "6",
+        0
+      ],
+      "strength": 0.55,
+      "start_percent": 0.0,
+      "end_percent": 0.7,
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "Apply CN: beach"
+    }
+  },
+  "26": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "25",
+        0
+      ],
+      "negative": [
+        "25",
+        1
+      ],
+      "latent_image": [
+        "7",
+        0
+      ],
+      "seed": 45,
+      "control_after_generate": "fixed",
+      "steps": 20,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "KSampler: beach"
+    }
+  },
+  "27": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "26",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "VAE Decode: beach"
+    }
+  },
+  "28": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "37",
+        0
+      ],
+      "filename_prefix": "product-localizer/beach"
+    },
+    "_meta": {
+      "title": "Save: beach"
+    }
+  },
+  "29": {
+    "class_type": "UpscaleModelLoader",
+    "inputs": {
+      "model_name": "4x-UltraSharp.pth"
+    }
+  },
+  "30": {
+    "class_type": "ImageUpscaleWithModel",
+    "inputs": {
+      "upscale_model": [
+        "29",
+        0
+      ],
+      "image": [
+        "12",
+        0
+      ]
+    }
+  },
+  "34": {
+    "class_type": "ImageScaleBy",
+    "inputs": {
+      "image": [
+        "30",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "scale_by": 1.0
+    }
+  },
+  "31": {
+    "class_type": "ImageUpscaleWithModel",
+    "inputs": {
+      "upscale_model": [
+        "29",
+        0
+      ],
+      "image": [
+        "17",
+        0
+      ]
+    }
+  },
+  "35": {
+    "class_type": "ImageScaleBy",
+    "inputs": {
+      "image": [
+        "31",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "scale_by": 1.0
+    }
+  },
+  "32": {
+    "class_type": "ImageUpscaleWithModel",
+    "inputs": {
+      "upscale_model": [
+        "29",
+        0
+      ],
+      "image": [
+        "22",
+        0
+      ]
+    }
+  },
+  "36": {
+    "class_type": "ImageScaleBy",
+    "inputs": {
+      "image": [
+        "32",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "scale_by": 1.0
+    }
+  },
+  "33": {
+    "class_type": "ImageUpscaleWithModel",
+    "inputs": {
+      "upscale_model": [
+        "29",
+        0
+      ],
+      "image": [
+        "27",
+        0
+      ]
+    }
+  },
+  "37": {
+    "class_type": "ImageScaleBy",
+    "inputs": {
+      "image": [
+        "33",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "scale_by": 1.0
+    }
+  }
+}

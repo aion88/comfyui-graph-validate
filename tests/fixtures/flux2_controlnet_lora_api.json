@@ -1,0 +1,88 @@
+{
+  "1": {
+    "class_type": "UnetLoaderGGUF",
+    "inputs": { "unet_name": "flux2-dev-Q3_K_S.gguf" }
+  },
+  "2": {
+    "class_type": "CLIPLoaderGGUF",
+    "inputs": {
+      "clip_name": "mistral_3_small_flux2_fp4_mixed.safetensors",
+      "type": "flux2"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "flux2-vae.safetensors" }
+  },
+  "4": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": ["1", 0],
+      "clip": ["2", 0],
+      "lora_name": "z_image_turbo/zit-c64.safetensors",
+      "strength_model": 0.8,
+      "strength_clip": 0.8
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "a cathedral interior, volumetric light",
+      "clip": ["4", 1]
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "text": "blurry, low quality", "clip": ["4", 1] }
+  },
+  "7": {
+    "class_type": "ControlNetLoader",
+    "inputs": {
+      "control_net_name": "flux1-dev-controlnet-union-pro.safetensors"
+    }
+  },
+  "8": { "class_type": "LoadImage", "inputs": { "image": "depth_map.png" } },
+  "9": {
+    "class_type": "ControlNetApplyAdvanced",
+    "inputs": {
+      "positive": ["5", 0],
+      "negative": ["6", 0],
+      "control_net": ["7", 0],
+      "image": ["8", 0],
+      "strength": 0.6,
+      "start_percent": 0.0,
+      "end_percent": 0.8
+    }
+  },
+  "10": {
+    "class_type": "EmptyFlux2LatentImage",
+    "inputs": { "width": 1024, "height": 1024, "batch_size": 1 }
+  },
+  "11": {
+    "class_type": "KSampler",
+    "inputs": {
+      "seed": 42,
+      "control_after_generate": "fixed",
+      "steps": 28,
+      "cfg": 3.5,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1,
+      "model": ["4", 0],
+      "positive": ["9", 0],
+      "negative": ["9", 1],
+      "latent_image": ["10", 0]
+    }
+  },
+  "12": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["11", 0], "vae": ["3", 0] }
+  },
+  "13": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "20260704_cathedral-cn",
+      "images": ["12", 0]
+    }
+  }
+}
